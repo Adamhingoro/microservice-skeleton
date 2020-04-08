@@ -1,15 +1,45 @@
-import express  from "express";
-// const express = require( "express" );
-const app = express();
-const port = 8080; // default port to listen
+import express from 'express';
+import { sequelize } from './database/sequelize';
+
+import { IndexRouter } from './controllers/v0/index.router';
+
+import bodyParser from 'body-parser';
+import { config } from './config/config';
+import { Models } from './models/index';
+
+const c = config.dev;
+
+(async () => {
+  await sequelize.addModels(Models);
+  await sequelize.sync();
+
+  const app = express();
+  const port = process.env.PORT || 8080; // default port to listen
+
+  app.use(bodyParser.json());
+
+  // CORS Should be restricted
+  app.use((req:express.Request, res:express.Response, next) => {
+    res.header("Access-Control-Allow-Origin", c.url);
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    next();
+  });
+
+  app.use('/api/'+config.application.api_version+'/', IndexRouter)
+
+  // Root URI call
+  app.get( "/", async ( req, res ) => {
+      // we are returning the internal details here but soon this will be ristricted and only be monitoring and metrics purpose
+      return res.status(200).json({
+          "manifest" : config.application,
+          "indexEndpoint" : '/api/'+config.application.api_version+'/'
+      });
+  } );
 
 
-// define a route handler for the default home page
-app.get( "/", (   req : express.Request ,   res : express.Response ) => {
-    res.send( "Hello world!" );
-} );
-
-// start the Express server
-app.listen( port, () => {
-    console.log( `server started at http://localhost:${ port }` );
-} );
+  // Start the Server
+  app.listen( port, () => {
+      console.log( `server running ` + c.url );
+      console.log( `press CTRL+C to stop server` );
+  } );
+})();

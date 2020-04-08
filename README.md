@@ -1,6 +1,7 @@
 # Microservice-Skeleton
 [![Build Status](https://travis-ci.com/Adamhingoro/microservice-skeleton.svg?branch=master)](https://travis-ci.com/Adamhingoro/microservice-skeleton)
-
+[![GitHub issues](https://img.shields.io/github/issues/Adamhingoro/microservice-skeleton)](https://github.com/Adamhingoro/microservice-skeleton/issues)
+[![GitHub stars](https://img.shields.io/github/stars/Adamhingoro/microservice-skeleton)](https://github.com/Adamhingoro/microservice-skeleton/stargazers)
 ## Table of Contents
 
 - [About](#about)

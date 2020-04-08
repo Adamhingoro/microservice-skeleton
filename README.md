@@ -1,5 +1,5 @@
 # Microservice-Skeleton
-Travis Build [![Build Status](https://travis-ci.com/Adamhingoro/microservice-skeleton.svg?branch=master)](https://travis-ci.com/Adamhingoro/microservice-skeleton)
+Travis [![Build Status](https://travis-ci.com/Adamhingoro/microservice-skeleton.svg?branch=master)](https://travis-ci.com/Adamhingoro/microservice-skeleton)
 ## Table of Contents
 
 - [About](#about)

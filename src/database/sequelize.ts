@@ -11,7 +11,7 @@ export const sequelize = new Sequelize({
   "database": c.database,
   "host":     c.host,
 
-  dialect: 'postgres',
+  "dialect" : "mysql", // have to put this constantsly. will find a workdaround this.
   storage: ':memory:',
 });
 

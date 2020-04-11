@@ -8,7 +8,6 @@ export class User extends Model<User> {
   @Column(DataType.INTEGER)
   public id: number;
 
-
   @Column(DataType.STRING)
   public email: string;
 

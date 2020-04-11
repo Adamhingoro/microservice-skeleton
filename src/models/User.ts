@@ -1,5 +1,5 @@
-import {Table, Column, Model, HasMany, PrimaryKey, CreatedAt, UpdatedAt, AutoIncrement, DataType} from 'sequelize-typescript';
-
+import {Table, Column, Model, HasMany, PrimaryKey, CreatedAt, UpdatedAt, AutoIncrement, DataType, Unique} from 'sequelize-typescript';
+import * as bcrypt from "bcryptjs";
 @Table
 export class User extends Model<User> {
 
@@ -8,6 +8,16 @@ export class User extends Model<User> {
   @Column(DataType.INTEGER)
   public id: number;
 
+  @Column(DataType.INTEGER)
+  public type: number;
+    // 1. SUPER ADMIN
+    // 2. RESTAURENT OWNER
+
+  @Column(DataType.INTEGER)
+  public ownership: number;
+    // This will be the restaurent ID
+
+  @Unique
   @Column(DataType.STRING)
   public email: string;
 
@@ -16,6 +26,9 @@ export class User extends Model<User> {
 
   @Column(DataType.STRING)
   public resetHash: string;
+
+  @Column(DataType.STRING)
+  public fullName: string;
 
   @Column(DataType.DATE)
   @CreatedAt
@@ -29,5 +42,13 @@ export class User extends Model<User> {
     return {
       email: this.email
     }
+  }
+
+  hashPassword() {
+    this.passwordHash = bcrypt.hashSync(this.passwordHash, 8);
+  }
+
+  async checkIfUnencryptedPasswordIsValid(unencryptedPassword: string) {
+    return await bcrypt.compareSync(unencryptedPassword, this.passwordHash);
   }
 }

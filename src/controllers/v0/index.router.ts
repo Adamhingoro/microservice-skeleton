@@ -1,11 +1,11 @@
 import { Router, Request, Response } from 'express';
 // Here is import different routers
-// import { UserRouter } from './users/routes/user.router';
+ import { UserRouter } from './user.router';
 
 const router: Router = Router();
 
 // Here we use different routers.
-// router.use('/users', UserRouter);
+router.use('/users', UserRouter);
 
 router.get('/', async (req: Request, res: Response) => {
     return res.json({

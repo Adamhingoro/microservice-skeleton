@@ -43,6 +43,14 @@ class AuthController{
         }
     }
 
+    static async OnlyRestaurentOwners(req : Request , res : Response , next : NextFunction ){
+        if(req.user.type !== 2){
+            return res.status(401).send();
+        } else {
+            next();
+        }
+    }
+
     static async Login(req: Request, res: Response){
         // Check if username and password are set
         const { email, password } = req.body;

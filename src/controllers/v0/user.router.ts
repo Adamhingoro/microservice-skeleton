@@ -1,11 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { User } from '../../models/User';
 import AuthController  from './auth.controller';
-import * as Joi from '@hapi/joi';
+import Joi from '@hapi/joi';
 import {
     createValidator, ContainerTypes, ValidatedRequestSchema, ValidatedRequest
   } from 'express-joi-validation'
-import { join } from 'bluebird';
 
 const router: Router = Router();
 
@@ -106,6 +105,10 @@ interface UpdateUserSchemaRequest extends ValidatedRequestSchema {
         type:number,
     }
 }
+
+
+
+// Routes
 
 router.post('/auth/login', AuthController.Login);
 

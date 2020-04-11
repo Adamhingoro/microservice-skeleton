@@ -28,7 +28,7 @@ export class Restaurent extends Model<Restaurent> {
   public cuisine: string;
 
   @Column(DataType.STRING)
-  public uuid: string;
+  public imageURL: string;
 
   @Column(DataType.DATE)
   @CreatedAt

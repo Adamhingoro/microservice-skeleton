@@ -22,7 +22,7 @@ export class MenuItem extends Model<MenuItem> {
   public price: number;
 
   @Column(DataType.STRING)
-  public uuid: string;
+  public imageURL: string;
 
   @Column(DataType.DATE)
   @CreatedAt

@@ -6,6 +6,7 @@ import { IndexRouter } from './controllers/v0/index.router';
 import bodyParser from 'body-parser';
 import { config } from './config/config';
 import { Models } from './models/index';
+import { User } from './models/User';
 
 const c = config.dev;
 
@@ -42,4 +43,19 @@ const c = config.dev;
       console.log( `server running ` + c.url );
       console.log( `press CTRL+C to stop server` );
   } );
+
+  const userCheck = await User.findOne({ where : { email : "adam@gmail.com" }});
+  if(userCheck === null){
+    const user = await User.create({
+      id: 1,
+      type: 1,
+      ownership: 0,
+      email: "adam@gmail.com",
+      fullName:"Adam Hingoro",
+      passwordHash:"computer",
+    });
+    user.hashPassword();
+    console.log("Super admin created");
+  }
+
 })();

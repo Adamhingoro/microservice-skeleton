@@ -1,6 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { User } from '../../models/User';
 import AuthController  from './auth.controller';
+import * as Joi from '@hapi/joi';
+import {
+    createValidator, ContainerTypes, ValidatedRequestSchema, ValidatedRequest
+  } from 'express-joi-validation'
+import { join } from 'bluebird';
+
 const router: Router = Router();
 
 class UserController{
@@ -15,25 +21,37 @@ class UserController{
         return res.status(200).json(user);
     }
 
-    static async update(req : Request, res : Response){
+    static async update(req : ValidatedRequest<UpdateUserSchemaRequest>, res : Response){
         const updateduser = req.body;
         const { id } = req.params;
         const user = await User.findByPk(id);
-        await User.update(updateduser, { where: { id: Number(id) } });
-        return res.status(200).json(updateduser);
+        if(user === null){
+            res.status(400).json({
+                "message" : "Unable to find the user",
+            });
+        } else {
+            await User.update(updateduser, { where: { id: Number(id) } });
+            return res.status(200).json(updateduser);
+        }
     }
 
-    static async create(req : Request, res : Response){
-        const newuser = req.body;
+    static async create(req : ValidatedRequest<NewUserSchemaRequest>, res : Response){
+        const postObject = req.body;
 
+        if(postObject.password !== postObject.confirmPassword){
+            return res.status(400).json({
+                "message" : "Password not matched with confirm_password",
+            });
+        }
         const user = await User.create({
-            type: newuser.type,
-            ownership: newuser.ownership,
-            email:newuser.email,
-            fullName:newuser.fullName,
-            passwordHash:newuser.password,
+            type: postObject.type,
+            ownership: postObject.ownership,
+            email:postObject.email,
+            fullName:postObject.fullName,
+            passwordHash:postObject.password,
         });
         user.hashPassword();
+        user.save();
         return res.status(200).json(user);
     }
 
@@ -44,17 +62,56 @@ class UserController{
             const DeletedUser = await User.destroy({
             where: { id: Number(id) }
             });
+            res.status(200).json({
+                "message" : "User Deleted",
+            })
             return DeletedUser;
+        } else {
+            res.status(400).json({
+                "message" : "could not found the user"
+            });
         }
     }
 }
 
+// Here we have the Schemas for the Sequilize
+const validator = createValidator()
+const UserSchema = Joi.object({
+  fullName: Joi.string().required(),
+  email: Joi.string().required(),
+  ownership: Joi.number().required(),
+  type:Joi.number().min(1).max(2).required(),
+});
+const newUserSchema = UserSchema.keys({
+  password: Joi.string().min(6).max(20).required(),
+  confirmPassword: Joi.any().valid(Joi.ref('password')).required()
+});
 
+interface NewUserSchemaRequest extends ValidatedRequestSchema {
+    [ContainerTypes.Body]: {
+        fullName: string,
+        email :string,
+        ownership:number,
+        type:number,
+        password:string,
+        confirmPassword:string,
+    }
+}
+
+interface UpdateUserSchemaRequest extends ValidatedRequestSchema {
+    [ContainerTypes.Body]: {
+        fullName: string,
+        email :string,
+        ownership:number,
+        type:number,
+    }
+}
 
 router.post('/auth/login', AuthController.Login);
-router.get('/', AuthController.CheckAuthentication ,  UserController.getAll);
-router.get('/:id', UserController.getOne);
-router.post('/', UserController.create);
-router.patch('/:id', UserController.update);
-router.delete('/:id', UserController.delete);
+
+router.post('/', [ AuthController.CheckAuthentication , AuthController.OnlyAdmin ,  validator.body(newUserSchema) ] ,  UserController.create);
+router.patch('/:id' , [ AuthController.CheckAuthentication , AuthController.OnlyAdmin , validator.body(UserSchema) ]  , UserController.update);
+router.get('/', [ AuthController.CheckAuthentication , AuthController.OnlyAdmin ] ,  UserController.getAll);
+router.get('/:id' , [ AuthController.CheckAuthentication , AuthController.OnlyAdmin ]  , UserController.getOne);
+router.delete('/:id' , [ AuthController.CheckAuthentication , AuthController.OnlyAdmin ]  , UserController.delete);
 export const UserRouter: Router = router;

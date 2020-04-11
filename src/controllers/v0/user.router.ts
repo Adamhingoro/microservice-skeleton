@@ -8,6 +8,8 @@ import {
 
 const router: Router = Router();
 
+// User Controller
+
 class UserController{
     static async getAll(req : Request, res : Response){
         const users = await User.findAll();
@@ -74,7 +76,9 @@ class UserController{
 }
 
 // Here we have the Schemas for the Sequilize
-const validator = createValidator()
+
+const validator = createValidator();
+
 const UserSchema = Joi.object({
   fullName: Joi.string().required(),
   email: Joi.string().required(),
@@ -106,12 +110,9 @@ interface UpdateUserSchemaRequest extends ValidatedRequestSchema {
     }
 }
 
-
-
 // Routes
 
 router.post('/auth/login', AuthController.Login);
-
 router.post('/', [ AuthController.CheckAuthentication , AuthController.OnlyAdmin ,  validator.body(newUserSchema) ] ,  UserController.create);
 router.patch('/:id' , [ AuthController.CheckAuthentication , AuthController.OnlyAdmin , validator.body(UserSchema) ]  , UserController.update);
 router.get('/', [ AuthController.CheckAuthentication , AuthController.OnlyAdmin ] ,  UserController.getAll);

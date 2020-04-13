@@ -13,6 +13,9 @@ export class Order extends Model<Order> {
   public customerId: number;
 
   @Column(DataType.INTEGER)
+  public restaurentId: number;
+
+  @Column(DataType.INTEGER)
   public subtotal: number;
 
   @Column(DataType.INTEGER)

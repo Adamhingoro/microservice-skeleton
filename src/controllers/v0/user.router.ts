@@ -18,8 +18,14 @@ class UserController{
 
     static async getOne(req : Request, res : Response){
         const id = req.params.id;
-        const user = await User.findByPk(id);
-        return res.status(200).json(user);
+        User.findByPk(id).then( (item) => {
+            if(item){
+                res.status(200).json(item);
+            } else {
+                res.status(404).send("Not Found");
+                return;
+            }
+        });
     }
 
     static async update(req : ValidatedRequest<UpdateUserSchemaRequest>, res : Response){

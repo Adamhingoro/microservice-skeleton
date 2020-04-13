@@ -7,6 +7,7 @@ class AuthController{
     static async CheckAuthentication(req : Request , res : Response , next : NextFunction ){
         try {
             const token = req.headers.authorization.split(' ')[1] as string;
+
             let jwtPayload;
 
             try {
@@ -25,7 +26,7 @@ class AuthController{
                 expiresIn: "1h"
             });
             res.setHeader("Authorization-Token", newToken);
-
+            req.token = newToken;
             next();
         } catch (error) {
             console.log("Error " , error.message);
@@ -63,12 +64,18 @@ class AuthController{
         try {
           user = await User.findOne({ where: { email } });
         } catch (error) {
-          res.status(401).send();
+          res.status(401).send("Not Authorized");
+          return;
+        }
+
+        if(!user){
+          res.status(401).send("Not Authorized");
+          return;
         }
 
         // Check if encrypted password match
         if (await !user.checkIfUnencryptedPasswordIsValid(password)) {
-          res.status(401).send();
+          res.status(401).send("Not Authorized");
           return;
         }
 
@@ -82,6 +89,7 @@ class AuthController{
         // Send the jwt in the response
         res.status(200).json({
             "message" : "Authenticated successfully",
+            "user" : { userId: user.id, email: user.email , ownership: user.ownership , type : user.type , fullName: user.fullName },
             "token" : token,
         });
     };

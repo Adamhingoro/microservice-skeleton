@@ -1,4 +1,4 @@
-import {Table, Column, Model, HasMany, PrimaryKey, CreatedAt, UpdatedAt, AutoIncrement, DataType} from 'sequelize-typescript';
+import {Table, Column, Model, HasMany, PrimaryKey, CreatedAt, UpdatedAt, AutoIncrement, DataType, Unique} from 'sequelize-typescript';
 
 @Table
 export class Customer extends Model<Customer> {
@@ -12,6 +12,7 @@ export class Customer extends Model<Customer> {
   @Column(DataType.STRING)
   public fullName: string;
 
+  @Unique
   @Column(DataType.STRING)
   public email: string;
 

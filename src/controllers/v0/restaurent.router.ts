@@ -5,6 +5,8 @@ import Joi from '@hapi/joi';
 import {
     createValidator, ContainerTypes, ValidatedRequestSchema, ValidatedRequest
   } from 'express-joi-validation'
+import ObjectRequester from '../../util/objectRequester'
+import { resolve } from 'bluebird';
 
 const router: Router = Router();
 
@@ -18,13 +20,28 @@ class RestaurentController{
 
     static async getOne(req : Request, res : Response){
         const id = req.params.id;
-        const item = await Restaurent.findByPk(id);
-        return res.status(200).json(item);
+        Restaurent.findByPk(id).then( (item) => {
+            if(item){
+                res.status(200).json(item);
+            } else {
+                res.status(404).send("Not Found");
+                return;
+            }
+        });
     }
 
     static async update(req : ValidatedRequest<RestaurentSchemaRequest>, res : Response){
+
         const updated = req.body;
         const { id } = req.params;
+
+        if(req.user.type === 2){ // If the user is owner.
+            if(req.user.ownership !== id){
+                res.status(401);
+                return;
+            }
+        }
+
         const item = await Restaurent.findByPk(id);
         if(item === null){
             res.status(400).json({
@@ -95,8 +112,8 @@ interface RestaurentSchemaRequest extends ValidatedRequestSchema {
 // Routes
 
 router.post('/', [ AuthController.CheckAuthentication , AuthController.OnlyAdmin ,  validator.body(RestaurentSchema) ] ,  RestaurentController.create);
-router.patch('/:id' , [ AuthController.CheckAuthentication , AuthController.OnlyAdmin , validator.body(RestaurentSchema) ]  , RestaurentController.update);
-router.get('/', [ AuthController.CheckAuthentication ] ,  RestaurentController.getAll);
-router.get('/:id' , [ AuthController.CheckAuthentication ]  , RestaurentController.getOne);
+router.patch('/:id' , [ AuthController.CheckAuthentication , validator.body(RestaurentSchema) ]  , RestaurentController.update);
+router.get('/' ,  RestaurentController.getAll);
+router.get('/:id' , RestaurentController.getOne);
 router.delete('/:id' , [ AuthController.CheckAuthentication , AuthController.OnlyAdmin ]  , RestaurentController.delete);
 export const RestaurentRouter: Router = router;

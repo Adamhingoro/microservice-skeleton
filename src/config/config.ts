@@ -28,5 +28,6 @@ export const config = {
         "version" : "0.0.1",
         "api_version": "v0",
         "name": "microservice.main",
+        "communication_secret":"1232kj1b23i12b312jb31i2312kj3b12i3b12k3j12i3b12i31b23i1b"
     }
 }

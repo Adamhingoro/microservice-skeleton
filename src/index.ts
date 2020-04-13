@@ -7,6 +7,8 @@ import bodyParser from 'body-parser';
 import { config } from './config/config';
 import { Models } from './models/index';
 import { User } from './models/User';
+// var cors = require('cors')
+import cors from "cors";
 
 const c = config.dev;
 
@@ -18,11 +20,13 @@ const c = config.dev;
   const port = process.env.PORT || 8080; // default port to listen
 
   app.use(bodyParser.json());
+  app.use(cors());
 
   // CORS Should be restricted
   app.use((req:express.Request, res:express.Response, next) => {
-    res.header("Access-Control-Allow-Origin", c.url);
+    res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    console.log("GOT REQEUST");
     next();
   });
 
@@ -55,6 +59,7 @@ const c = config.dev;
       passwordHash:"computer",
     });
     user.hashPassword();
+    user.save();
     console.log("Super admin created");
   }
 

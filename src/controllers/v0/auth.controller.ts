@@ -44,7 +44,7 @@ class AuthController{
         }
     }
 
-    static async OnlyRestaurentOwners(req : Request , res : Response , next : NextFunction ){
+    static async OnlyRestaurantOwners(req : Request , res : Response , next : NextFunction ){
         if(req.user.type !== 2){
             return res.status(401).send();
         } else {

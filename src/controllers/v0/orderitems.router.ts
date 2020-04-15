@@ -10,7 +10,7 @@ import { Order } from '../../models/Order';
 
 const router: Router = Router();
 
-// Restaurent Controller
+// restaurant Controller
 
 class OrderItemController{
     static async getAll(req : Request, res : Response){

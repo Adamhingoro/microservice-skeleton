@@ -9,7 +9,7 @@ import ObjectRequester from '../../util/objectRequester';
 
 const router: Router = Router();
 
-// Restaurent Controller
+// restaurant Controller
 
 class OrderController{
     static async getAll(req : Request, res : Response){
@@ -31,7 +31,7 @@ class OrderController{
         const id = req.params.id;
         const items = await Order.findAll({
             where:{
-                restaurentId: id
+                restaurantId: id
             }
         });
         return res.status(200).json(items);
@@ -66,13 +66,13 @@ class OrderController{
 
     static async create(req : ValidatedRequest<OrderSchemaRequest>, res : Response){
         const postItem = req.body;
-        const menu = await ObjectRequester.getRestaurent(req.token , postItem.restaurentId);
+        const menu = await ObjectRequester.getRestaurant(req.token , postItem.restaurantId);
         const customer = await ObjectRequester.getCustomer(req.token , postItem.customerId);
         console.log("RES" , menu);
         if(menu !== null && customer !== null){
             const item = await Order.create({
                 customerId: postItem.customerId,
-                restaurentId: postItem.restaurentId,
+                restaurantId: postItem.restaurantId,
                 status: 1, // initial stage
             });
             return res.status(201).json(item);
@@ -105,13 +105,13 @@ const validator = createValidator();
 
 const OrderSchema = Joi.object({
     customerId:Joi.number().required(),
-    restaurentId:Joi.number().required(),
+    restaurantId:Joi.number().required(),
 });
 
 interface OrderSchemaRequest extends ValidatedRequestSchema {
     [ContainerTypes.Body]: {
         customerId: number,
-        restaurentId: number,
+        restaurantId: number,
     }
 }
 
@@ -122,6 +122,6 @@ router.patch('/:id' , [ AuthController.CheckAuthentication  , validator.body(Ord
 router.get('/', [ AuthController.CheckAuthentication ] ,  OrderController.getAll);
 router.get('/:id'  , OrderController.getOne);
 router.get('/customer/:id'  , OrderController.getByCustomer);
-router.get('/restaurent/:id'  , OrderController.getByResraurent);
+router.get('/restaurant/:id'  , OrderController.getByResraurent);
 router.delete('/:id' , [ AuthController.CheckAuthentication ]  , OrderController.delete);
 export const OrderRouter: Router = router;

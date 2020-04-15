@@ -1,7 +1,7 @@
 import {Table, Column, Model, HasMany, PrimaryKey, CreatedAt, UpdatedAt, AutoIncrement, DataType} from 'sequelize-typescript';
 
 @Table
-export class Restaurent extends Model<Restaurent> {
+export class Restaurant extends Model<Restaurant> {
 
   @PrimaryKey
   @AutoIncrement

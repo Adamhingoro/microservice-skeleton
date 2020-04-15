@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { Restaurent } from '../../models/Restaurent';
+import { Restaurant } from '../../models/Restaurant';
 import AuthController  from './auth.controller';
 import Joi from '@hapi/joi';
 import {
@@ -10,17 +10,17 @@ import { resolve } from 'bluebird';
 
 const router: Router = Router();
 
-// Restaurent Controller
+// restaurant Controller
 
-class RestaurentController{
+class RestaurantController{
     static async getAll(req : Request, res : Response){
-        const items = await Restaurent.findAll();
+        const items = await Restaurant.findAll();
         return res.status(200).json(items);
     }
 
     static async getOne(req : Request, res : Response){
         const id = req.params.id;
-        Restaurent.findByPk(id).then( (item) => {
+        Restaurant.findByPk(id).then( (item) => {
             if(item){
                 res.status(200).json(item);
             } else {
@@ -30,7 +30,7 @@ class RestaurentController{
         });
     }
 
-    static async update(req : ValidatedRequest<RestaurentSchemaRequest>, res : Response){
+    static async update(req : ValidatedRequest<RestaurantSchemaRequest>, res : Response){
 
         const updated = req.body;
         const { id } = req.params;
@@ -42,21 +42,21 @@ class RestaurentController{
             }
         }
 
-        const item = await Restaurent.findByPk(id);
+        const item = await Restaurant.findByPk(id);
         if(item === null){
             res.status(400).json({
                 "message" : "Unable to find the item",
             });
         } else {
-            await Restaurent.update(updated, { where: { id: Number(id) } });
+            await Restaurant.update(updated, { where: { id: Number(id) } });
             return res.status(200).json(updated);
         }
     }
 
-    static async create(req : ValidatedRequest<RestaurentSchemaRequest>, res : Response){
+    static async create(req : ValidatedRequest<RestaurantSchemaRequest>, res : Response){
         const postItem = req.body;
 
-        const item = await Restaurent.create({
+        const item = await Restaurant.create({
             name: postItem.name,
             address: postItem.address,
             city:postItem.city,
@@ -69,17 +69,17 @@ class RestaurentController{
 
     static async delete(req : Request, res : Response){
         const { id } = req.params;
-        const itemToDelete = await Restaurent.findOne({ where: { id: Number(id) } });
+        const itemToDelete = await Restaurant.findOne({ where: { id: Number(id) } });
         if (itemToDelete) {
-            const DeletedUser = await Restaurent.destroy({
+            const DeletedUser = await Restaurant.destroy({
                 where: { id: Number(id) }
             });
             res.status(200).json({
-                "message" : "Restaurent Deleted",
+                "message" : "restaurant Deleted",
             });
         } else {
             res.status(400).json({
-                "message" : "could not found the Restaurent"
+                "message" : "could not found the restaurant"
             });
         }
     }
@@ -89,7 +89,7 @@ class RestaurentController{
 
 const validator = createValidator();
 
-const RestaurentSchema = Joi.object({
+const RestaurantSchema = Joi.object({
     name:Joi.string().min(6).max(100).required(),
     address:Joi.string().min(6).max(100).required(),
     city:Joi.string().min(3).max(100).required(),
@@ -98,7 +98,7 @@ const RestaurentSchema = Joi.object({
     cuisine:Joi.string().min(1).max(100).required(),
 });
 
-interface RestaurentSchemaRequest extends ValidatedRequestSchema {
+interface RestaurantSchemaRequest extends ValidatedRequestSchema {
     [ContainerTypes.Body]: {
         name: string,
         address: string,
@@ -111,9 +111,9 @@ interface RestaurentSchemaRequest extends ValidatedRequestSchema {
 
 // Routes
 
-router.post('/', [ AuthController.CheckAuthentication , AuthController.OnlyAdmin ,  validator.body(RestaurentSchema) ] ,  RestaurentController.create);
-router.patch('/:id' , [ AuthController.CheckAuthentication , validator.body(RestaurentSchema) ]  , RestaurentController.update);
-router.get('/' ,  RestaurentController.getAll);
-router.get('/:id' , RestaurentController.getOne);
-router.delete('/:id' , [ AuthController.CheckAuthentication , AuthController.OnlyAdmin ]  , RestaurentController.delete);
-export const RestaurentRouter: Router = router;
+router.post('/', [ AuthController.CheckAuthentication , AuthController.OnlyAdmin ,  validator.body(RestaurantSchema) ] ,  RestaurantController.create);
+router.patch('/:id' , [ AuthController.CheckAuthentication , validator.body(RestaurantSchema) ]  , RestaurantController.update);
+router.get('/' ,  RestaurantController.getAll);
+router.get('/:id' , RestaurantController.getOne);
+router.delete('/:id' , [ AuthController.CheckAuthentication , AuthController.OnlyAdmin ]  , RestaurantController.delete);
+export const RestaurantRouter: Router = router;

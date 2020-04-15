@@ -9,7 +9,7 @@ import ObjectRequester from '../../util/objectRequester';
 
 const router: Router = Router();
 
-// Restaurent Controller
+// restaurant Controller
 
 class MenuController{
     static async getAll(req : Request, res : Response){
@@ -17,11 +17,11 @@ class MenuController{
         return res.status(200).json(items);
     }
 
-    static async getByRestaurent(req : Request, res : Response){
+    static async getByRestaurant(req : Request, res : Response){
         const id = req.params.id;
         const items = await Menu.findAll({
             where:{
-                restaurentId: id
+                restaurantId: id
             }
         });
         return res.status(200).json(items);
@@ -43,8 +43,8 @@ class MenuController{
         const id = req.params.id;
         Menu.findByPk(id).then( async (item) => {
             if(item){
-                const restaurent = await ObjectRequester.getRestaurent(req.token , item.restaurentId);
-                if(restaurent)
+                const restaurant = await ObjectRequester.getRestaurant(req.token , item.restaurantId);
+                if(restaurant)
                 {
                     res.status(200).json(item);
                 } else {
@@ -59,8 +59,8 @@ class MenuController{
 
     static async update(req : ValidatedRequest<MenuSchemaRequest>, res : Response){
         const updated = req.body;
-        const restaurent = await ObjectRequester.getRestaurent(req.token , updated.restaurentId);
-        if(restaurent){
+        const restaurant = await ObjectRequester.getRestaurant(req.token , updated.restaurantId);
+        if(restaurant){
             const { id } = req.params;
             const item = await Menu.findByPk(id);
             if(item === null){
@@ -78,13 +78,13 @@ class MenuController{
 
     static async create(req : ValidatedRequest<MenuSchemaRequest>, res : Response){
         const postItem = req.body;
-        const restaurent = await ObjectRequester.getRestaurent(req.token , postItem.restaurentId);
-        console.log("RES" , restaurent);
-        if(restaurent !== null){
+        const restaurant = await ObjectRequester.getRestaurant(req.token , postItem.restaurantId);
+        console.log("RES" , restaurant);
+        if(restaurant !== null){
             const item = await Menu.create({
                 name: postItem.name,
                 description: postItem.description,
-                restaurentId:postItem.restaurentId,
+                restaurantId:postItem.restaurantId,
             });
             return res.status(201).json(item);
         } else {
@@ -117,14 +117,14 @@ const validator = createValidator();
 const MenuSchema = Joi.object({
     name:Joi.string().min(6).max(100).required(),
     description:Joi.string().min(6).max(100).required(),
-    restaurentId:Joi.number().required(),
+    restaurantId:Joi.number().required(),
 });
 
 interface MenuSchemaRequest extends ValidatedRequestSchema {
     [ContainerTypes.Body]: {
         name: string,
         description: string,
-        restaurentId: number,
+        restaurantId: number,
     }
 }
 
@@ -135,6 +135,6 @@ router.patch('/:id' , [ AuthController.CheckAuthentication  , validator.body(Men
 router.get('/', [ AuthController.CheckAuthentication ] ,  MenuController.getAll);
 router.get('/:id'  , MenuController.getOne);
 router.get('/cantouch/:id'  , MenuController.canTouch);
-router.get('/restaurent/:id'  , MenuController.getByRestaurent);
+router.get('/restaurant/:id'  , MenuController.getByRestaurant);
 router.delete('/:id' , [ AuthController.CheckAuthentication ]  , MenuController.delete);
 export const MenuRouter: Router = router;

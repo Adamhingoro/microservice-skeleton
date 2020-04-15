@@ -13,7 +13,7 @@ export class Order extends Model<Order> {
   public customerId: number;
 
   @Column(DataType.INTEGER)
-  public restaurentId: number;
+  public restaurantId: number;
 
   @Column(DataType.INTEGER)
   public subtotal: number;

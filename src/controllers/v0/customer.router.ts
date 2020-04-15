@@ -5,11 +5,10 @@ import Joi from '@hapi/joi';
 import {
     createValidator, ContainerTypes, ValidatedRequestSchema, ValidatedRequest
   } from 'express-joi-validation'
-import ObjectRequester from '../../util/objectRequester';
 
 const router: Router = Router();
 
-// Restaurent Controller
+// restaurant Controller
 
 class CustomerController{
     static async getAll(req : Request, res : Response){
@@ -45,16 +44,20 @@ class CustomerController{
     }
 
     static async create(req : ValidatedRequest<CustomerSchemaRequest>, res : Response){
-        const postItem = req.body;
-        const item = await Customer.create({
-            fullName: postItem.fullName,
-            email: postItem.email,
-            address: postItem.address,
-            city: postItem.city,
-            country: postItem.country,
-            state: postItem.state,
-        });
-        return res.status(201).json(item);
+        try {
+            const postItem = req.body;
+            const item = await Customer.create({
+                fullName: postItem.fullName,
+                email: postItem.email,
+                address: postItem.address,
+                city: postItem.city,
+                country: postItem.country,
+                state: postItem.state,
+            });
+            return res.status(201).json(item);
+        } catch (error) {
+            return res.status(400).json(error);
+        }
     }
 
     static async delete(req : Request, res : Response){
@@ -101,9 +104,9 @@ interface CustomerSchemaRequest extends ValidatedRequestSchema {
 
 // Routes
 
-router.post('/', [ AuthController.CheckAuthentication  ,  validator.body(CustomerSchema) ] ,  CustomerController.create);
+router.post('/',  validator.body(CustomerSchema)  ,  CustomerController.create);
 router.patch('/:id' , [ AuthController.CheckAuthentication  , validator.body(CustomerSchema) ]  , CustomerController.update);
-router.get('/', [ AuthController.CheckAuthentication ] ,  CustomerController.getAll);
-router.get('/:id'  , CustomerController.getOne);
-router.delete('/:id' , [ AuthController.CheckAuthentication ]  , CustomerController.delete);
+router.get('/', AuthController.CheckAuthentication  ,  CustomerController.getAll);
+router.get('/:id' , AuthController.CheckAuthentication   , CustomerController.getOne);
+router.delete('/:id' , AuthController.CheckAuthentication   , CustomerController.delete);
 export const CustomerRouter: Router = router;

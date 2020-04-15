@@ -9,7 +9,7 @@ import ObjectRequester from '../../util/objectRequester';
 
 const router: Router = Router();
 
-// Restaurent Controller
+// restaurant Controller
 
 class MenuItemController{
     static async getAll(req : Request, res : Response){

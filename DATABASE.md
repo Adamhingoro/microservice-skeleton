@@ -1,6 +1,6 @@
 ## Here is our database plan
 
-### Microservice App for Multi-Restaurent 
+### Microservice App for Multi-restaurant 
 
 1. Users.   `done`
     1. Full name
@@ -36,7 +36,7 @@
 4. Menu
     1. Name
     2. Description
-    3. Restaurent ID
+    3. restaurant ID
 5. Menu-Item
     1. Name
     2. Image

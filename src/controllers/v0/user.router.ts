@@ -66,6 +66,13 @@ class UserController{
         const { id } = req.params;
         const userToDelete = await User.findOne({ where: { id: Number(id) } });
         if (userToDelete) {
+            if(userToDelete.id === req.user.id){
+                res.status(401).json({
+                    "message" : "Cant delete the user while you are logged in"
+                });
+                return;
+            }
+
             const DeletedUser = await User.destroy({
             where: { id: Number(id) }
             });

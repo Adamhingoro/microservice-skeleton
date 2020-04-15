@@ -22,11 +22,11 @@ class ObjectRequester{
         });
     }
 
-    static getRestaurent( token:string ,  RestaurentId: number){
-        console.log("Requesting Object Restaurent " , RestaurentId);
+    static getRestaurant( token:string ,  restaurantId: number){
+        console.log("Requesting Object restaurant " , restaurantId);
         return new Promise((resolve, reject) => {
             request({
-                url: `${c.url}/api/${config.application.api_version}/restaurents/${RestaurentId}`,
+                url: `${c.url}/api/${config.application.api_version}/restaurants/${restaurantId}`,
                 headers: {
                   'Authorization': `token ${token}`
                 },

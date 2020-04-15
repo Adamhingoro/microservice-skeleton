@@ -11,11 +11,11 @@ export class User extends Model<User> {
   @Column(DataType.INTEGER)
   public type: number;
     // 1. SUPER ADMIN
-    // 2. RESTAURENT OWNER
+    // 2. restaurant OWNER
 
   @Column(DataType.INTEGER)
   public ownership: number;
-    // This will be the restaurent ID
+    // This will be the restaurant ID
 
   @Unique
   @Column(DataType.STRING)

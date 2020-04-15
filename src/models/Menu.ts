@@ -16,7 +16,7 @@ export class Menu extends Model<Menu> {
   public description: string;
 
   @Column(DataType.INTEGER)
-  public restaurentId: number;
+  public restaurantId: number;
 
   @Column(DataType.DATE)
   @CreatedAt

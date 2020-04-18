@@ -9,6 +9,7 @@ import { Models } from './models/index';
 import { User } from './models/User';
 // var cors = require('cors')
 import cors from "cors";
+import { Order } from './models/Order';
 
 const c = config.dev;
 

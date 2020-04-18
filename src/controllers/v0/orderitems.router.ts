@@ -80,7 +80,9 @@ class OrderItemController{
                 menuItemId: postItem.menuItemId,
                 quantity:postItem.quantity,
                 price:menuitem.price,
+                total:(menuitem.price * postItem.quantity)
             });
+            order.CalculateTotals();
             return res.status(201).json(item);
         } else {
             return res.status(400).send("Not Possible");
@@ -125,7 +127,7 @@ interface OrderItemSchemaRequest extends ValidatedRequestSchema {
 
 // Routes
 
-router.post('/', [ AuthController.CheckAuthentication  ,  validator.body(OrderItemSchema) ] ,  OrderItemController.create);
+router.post('/', [ validator.body(OrderItemSchema) ] ,  OrderItemController.create);
 router.patch('/:id' , [ AuthController.CheckAuthentication  , validator.body(OrderItemSchema) ]  , OrderItemController.update);
 router.get('/', [ AuthController.CheckAuthentication ] ,  OrderItemController.getAll);
 router.get('/:id'  , OrderItemController.getOne);

@@ -107,6 +107,6 @@ interface CustomerSchemaRequest extends ValidatedRequestSchema {
 router.post('/',  validator.body(CustomerSchema)  ,  CustomerController.create);
 router.patch('/:id' , [ AuthController.CheckAuthentication  , validator.body(CustomerSchema) ]  , CustomerController.update);
 router.get('/', AuthController.CheckAuthentication  ,  CustomerController.getAll);
-router.get('/:id' , AuthController.CheckAuthentication   , CustomerController.getOne);
+router.get('/:id' , CustomerController.getOne);
 router.delete('/:id' , AuthController.CheckAuthentication   , CustomerController.delete);
 export const CustomerRouter: Router = router;

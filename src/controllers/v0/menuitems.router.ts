@@ -6,6 +6,9 @@ import {
     createValidator, ContainerTypes, ValidatedRequestSchema, ValidatedRequest
   } from 'express-joi-validation'
 import ObjectRequester from '../../util/objectRequester';
+import { v4 as uuidv4 } from "uuid";
+import * as AWS from '../../util/AWS';
+import { config } from "../../config/config";
 
 const router: Router = Router();
 
@@ -32,6 +35,26 @@ class MenuItemController{
         MenuItem.findByPk(id).then( (item) => {
             if(item){
                 res.status(200).json(item);
+            } else {
+                res.status(404).send("Not Found");
+                return;
+            }
+        });
+    }
+
+    static async getUploadURL(req : Request, res : Response){
+        const id = req.params.id;
+        MenuItem.findByPk(id).then( (item) => {
+            if(item){
+                const ImageUUID = uuidv4();
+                const url = AWS.getPutSignedUrl(ImageUUID);
+                item.imageURL = `https://${config.dev.aws_media_bucket}.s3.${config.dev.aws_reigion}.amazonaws.com/${ImageUUID}`;
+                item.save();
+                res.status(201).json({
+                    url,
+                    uuid:ImageUUID,
+                    item,
+                });
             } else {
                 res.status(404).send("Not Found");
                 return;
@@ -119,6 +142,7 @@ router.post('/', [ AuthController.CheckAuthentication  ,  validator.body(MenuIte
 router.patch('/:id' , [ AuthController.CheckAuthentication  , validator.body(MenuItemSchema) ]  , MenuItemController.update);
 router.get('/', [ AuthController.CheckAuthentication ] ,  MenuItemController.getAll);
 router.get('/:id'  , MenuItemController.getOne);
+router.get('/imageurl/:id' , [ AuthController.CheckAuthentication ]  , MenuItemController.getUploadURL);
 router.get('/menu/:id'  , MenuItemController.getByMenu);
 router.delete('/:id' , [ AuthController.CheckAuthentication ]  , MenuItemController.delete);
 export const MenuItemRouter: Router = router;

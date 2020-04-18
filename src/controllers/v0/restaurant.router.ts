@@ -5,8 +5,9 @@ import Joi from '@hapi/joi';
 import {
     createValidator, ContainerTypes, ValidatedRequestSchema, ValidatedRequest
   } from 'express-joi-validation'
-import ObjectRequester from '../../util/objectRequester'
-import { resolve } from 'bluebird';
+import { v4 as uuidv4 } from "uuid";
+import * as AWS from '../../util/AWS';
+import { config } from "../../config/config";
 
 const router: Router = Router();
 
@@ -51,6 +52,27 @@ class RestaurantController{
             await Restaurant.update(updated, { where: { id: Number(id) } });
             return res.status(200).json(updated);
         }
+    }
+
+
+    static async getUploadURL(req : Request, res : Response){
+        const id = req.params.id;
+        Restaurant.findByPk(id).then( (restaurant) => {
+            if(restaurant){
+                const ImageUUID = uuidv4();
+                const url = AWS.getPutSignedUrl(ImageUUID);
+                restaurant.imageURL = `https://${config.dev.aws_media_bucket}.s3.${config.dev.aws_reigion}.amazonaws.com/${ImageUUID}`;
+                restaurant.save();
+                res.status(201).json({
+                    url,
+                    uuid:ImageUUID,
+                    restaurant,
+                });
+            } else {
+                res.status(404).send("Not Found");
+                return;
+            }
+        });
     }
 
     static async create(req : ValidatedRequest<RestaurantSchemaRequest>, res : Response){
@@ -115,5 +137,6 @@ router.post('/', [ AuthController.CheckAuthentication , AuthController.OnlyAdmin
 router.patch('/:id' , [ AuthController.CheckAuthentication , validator.body(RestaurantSchema) ]  , RestaurantController.update);
 router.get('/' ,  RestaurantController.getAll);
 router.get('/:id' , RestaurantController.getOne);
+router.get('/imageurl/:id' , [ AuthController.CheckAuthentication ]  , RestaurantController.getUploadURL);
 router.delete('/:id' , [ AuthController.CheckAuthentication , AuthController.OnlyAdmin ]  , RestaurantController.delete);
 export const RestaurantRouter: Router = router;

@@ -13,8 +13,18 @@ const router: Router = Router();
 
 class OrderController{
     static async getAll(req : Request, res : Response){
-        const items = await Order.findAll();
-        return res.status(200).json(items);
+        if(req.user.ownership === 0){
+            const items = await Order.findAll();
+            return res.status(200).json(items);
+        } else {
+            const items = await Order.findAll({
+                where:{
+                    restaurantId: req.user.ownership
+                }
+            });
+            return res.status(200).json(items);
+        }
+
     }
 
     static async getByCustomer(req : Request, res : Response){
@@ -49,6 +59,11 @@ class OrderController{
         });
     }
 
+    static async getAvailibleStatuses(req : Request, res : Response){
+        res.status(200).json(OrderStatuses);
+        return;
+    }
+
     static async update(req : ValidatedRequest<OrderSchemaRequest>, res : Response){
         const updated = req.body;
         const { id } = req.params;
@@ -61,7 +76,21 @@ class OrderController{
             await Order.update(updated, { where: { id: Number(id) } });
             return res.status(200).json(updated);
         }
+    }
 
+    static async updateStatus(req : Request , res : Response){
+        const { id , status } = req.params;
+        const item = await Order.findByPk(id);
+        if(item === null){
+            res.status(400).json({
+                "message" : "Unable to find the item",
+            });
+        } else {
+            item.status = +status;
+            console.log("ITEM" , item);
+            item.save();
+            return res.status(200).json(item);
+        }
     }
 
     static async create(req : ValidatedRequest<OrderSchemaRequest>, res : Response){
@@ -101,6 +130,14 @@ class OrderController{
 
 // Here we have the Schemas for the Sequilize
 
+const OrderStatuses = [
+    "Pending",
+    "Accepted",
+    "Preparing",
+    "Enroute",
+    "Delivered",
+]
+
 const validator = createValidator();
 
 const OrderSchema = Joi.object({
@@ -117,11 +154,13 @@ interface OrderSchemaRequest extends ValidatedRequestSchema {
 
 // Routes
 
-router.post('/', [ AuthController.CheckAuthentication  ,  validator.body(OrderSchema) ] ,  OrderController.create);
+router.post('/', [ validator.body(OrderSchema) ] ,  OrderController.create);
+router.patch('/status/:id/:status'  , AuthController.CheckAuthentication  , OrderController.updateStatus);
 router.patch('/:id' , [ AuthController.CheckAuthentication  , validator.body(OrderSchema) ]  , OrderController.update);
 router.get('/', [ AuthController.CheckAuthentication ] ,  OrderController.getAll);
+router.get('/statuses',  OrderController.getAvailibleStatuses);
 router.get('/:id'  , OrderController.getOne);
-router.get('/customer/:id'  , OrderController.getByCustomer);
-router.get('/restaurant/:id'  , OrderController.getByResraurent);
+router.get('/customer/:id' , AuthController.CheckAuthentication  , OrderController.getByCustomer);
+router.get('/restaurant/:id' , AuthController.CheckAuthentication   , OrderController.getByResraurent);
 router.delete('/:id' , [ AuthController.CheckAuthentication ]  , OrderController.delete);
 export const OrderRouter: Router = router;

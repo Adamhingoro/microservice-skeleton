@@ -1,4 +1,5 @@
 import {Table, Column, Model, HasMany, PrimaryKey, CreatedAt, UpdatedAt, AutoIncrement, DataType} from 'sequelize-typescript';
+import { OrderItem } from './OrderItem';
 
 @Table
 export class Order extends Model<Order> {
@@ -33,4 +34,9 @@ export class Order extends Model<Order> {
   @UpdatedAt
   public updatedAt: Date = new Date();
 
+  CalculateTotals = async () => {
+    this.total = await OrderItem.sum('total', { where: { orderId: this.id } }); // 50
+    console.log("The Order Totals are " , this.total , " for id " , this.id);
+    this.save();
+  }
 }

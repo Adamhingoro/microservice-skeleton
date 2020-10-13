@@ -26,7 +26,16 @@ export const config = {
     },
     "application":{
         "version" : "0.0.1",
-        "api_version": "v0",
+        "api_version": "v1",
         "name": "microservice.main",
+    },
+    queueConfiguration : {
+      prefix: "aq",
+      redis: {
+        host: '127.0.0.1',
+        port: 6379,
+        db: 0,
+        options: {},
+      }
     }
 }

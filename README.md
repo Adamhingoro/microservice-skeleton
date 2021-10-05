@@ -54,4 +54,4 @@ End with an example of getting some data out of the system or using it for a lit
 
 ## Usage <a name = "usage"></a> - AREA INCOMPLETE
 
-Add notes about how to use the system.
+Simply clone the repository, set the database config and you will be good to go. 

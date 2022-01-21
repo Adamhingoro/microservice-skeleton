@@ -46,7 +46,7 @@
     "express-joi-validation": "^4.0.4-beta.0",
     "express-session": "^1.17.1",
     "jsonwebtoken": "^8.5.1",
-    "log4js": "^6.3.0",
+    "log4js": "^6.4.0",
     "mysql2": "^2.2.2",
     "node-ssh": "^11.1.0",
     "oauth2orize": "^1.11.0",

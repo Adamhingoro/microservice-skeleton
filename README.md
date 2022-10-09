@@ -15,6 +15,15 @@ This is the basic skeleton for microservices using ExpressJS - TypeScript - Sequ
 
 I highly encourage the developers to contribute and simple way is that you have to make a seperate branch and make a pull request in the end. Please make sure it passes all the tests and linters. other wise the pull-request will be rejected. 
 
+## Things need to be developed 
+
+There are plenty of things we need while building the nodejs microservice. and not everyone needs all of them but most of them are important. so we planed to add following features/tools
+
+- Elastic APM / OpenAPI tracing 
+- Logstash Logging / Centralize logging solution
+- Redis Cluster Connection 
+- and much much more. 
+
 ### branch-naming
 
 name your branch wisely. example branch names are `feature-events-sourcing` and `fixed-issue-no-1234`. please use dashed-names. 

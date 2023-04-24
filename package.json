@@ -35,7 +35,7 @@
     "@types/passport-oauth2-client-password": "^0.1.2",
     "@types/redis": "^2.8.27",
     "axios": "^0.20.0",
-    "bcrypt": "^4.0.1",
+    "bcrypt": "^5.0.0",
     "bcryptjs": "^2.4.3",
     "bee-queue": "^1.2.3",
     "connect-ensure-login": "^0.1.1",
